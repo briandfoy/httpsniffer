@@ -82,12 +82,8 @@ sub print_packet
 		
 	$packet =~ s/.{104}//; # remove protocol info
 	return unless length $packet > 0;
-		
-	#print "---\nPacket is\n$packet\n----\n";
-	
+			
 	$packet =~ s/0d0a0d0a.*/0d0/i; # Just keep the HTTP header
-
-	#print "---\nPacket is now \n$packet\n----\n";
 	
 	my $pretty = '';
 	
@@ -103,7 +99,7 @@ sub print_packet
 			else                             { chr $hex }
 			};
 		}
-	
+		
 	if( $pretty =~ m/^(?:HTTP|GET|POST)/ )
 		{
 		print_header( $header );
