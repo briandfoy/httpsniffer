@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use strict;
+use warnings;
 
 =head1 NAME
 
@@ -41,11 +42,11 @@ members of the project can shepherd this module appropriately.
 
 =head1 AUTHOR
 
-brian d foy E<lt>bdfoy@cpan.orgE<gt>
+brian d foy C<< <bdfoy@cpan.org> >>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-Copyright 2002, brian d foy.  All rights reserved.
+Copyright 2002-2207, brian d foy.  All rights reserved.
 
 This program may be redistributed under the same turns as Perl
 itself.
@@ -54,29 +55,36 @@ itself.
 
 =cut
 
-my( $header, $packet ) = ('', '');
+__PACKAGE__->run unless caller;
 
-open STDIN, "sudo /usr/sbin/tcpdump -lx -i en1 -s 1024 dst port 80 or src port 80 |";
-#die "Could not open tcpdump" unless $?;
-
-LINE: while( <> ) 
+sub run
 	{
-	chomp;
+	my( $header, $packet ) = ('', '');
 
-	if( /^\S+/ )
+	open STDIN, "sudo /usr/sbin/tcpdump -lx -i en1 -s 1024 dst port 80 or src port 80 |";
+	#die "Could not open tcpdump" unless $?;
+	
+	LINE: while( <> ) 
 		{
-		print_packet( $header, $packet );
-		$header = $_;
-		$packet = undef;
-		next LINE;
+		chomp;
+	
+		if( /^\S+/ )
+			{
+			print_packet( $header, $packet );
+			$header = $_;
+			$packet = undef;
+			next LINE;
+			}
+	
+		$packet .= $_;
 		}
-
-    $packet .= $_;
 	}
-
+	
 sub print_packet
 	{
 	my( $header, $packet ) = @_;
+	
+	$packet =~ s/0x[0-9a-f]+://mig;
 	
 	$packet =~ s/\s//g;
 		
@@ -86,6 +94,7 @@ sub print_packet
 	$packet =~ s/0d0a0d0a.*/0d0/i; # Just keep the HTTP header
 	
 	my $pretty = '';
+	#print $packet; return;
 	
 	BYTE: while( $packet =~ m/\G([0-9a-f]{2})\s*/ig )
 		{
