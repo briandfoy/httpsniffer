@@ -9,13 +9,13 @@ httpsniffer
 =head1 SYNOPSIS
 
 	./httpsniffer
-	
+
 =head1 DESCRIPTION
 
 The C<httpsniffer> program reads from tcpdump, which it starts
 internally with sudo, and prints out HTTP request and response
-headers, up to 1024 bytes.  It only looks for packets with a 
-source or destination port 80. 
+headers, up to 1024 bytes.  It only looks for packets with a
+source or destination port 80.
 
 If you want to change any of the behaviour, you have to edit the
 script.
@@ -52,7 +52,6 @@ This program may be redistributed under the same turns as Perl
 itself.
 
 
-
 =cut
 
 __PACKAGE__->run unless caller;
@@ -75,49 +74,49 @@ sub run
 			$packet = undef;
 			next LINE;
 			}
-	
+
 		$packet .= $_;
 		}
 	}
-	
+
 sub print_packet
 	{
 	my( $header, $packet ) = @_;
-	
+
 	$packet =~ s/0x[0-9a-f]+://mig;
-	
+
 	$packet =~ s/\s//g;
-		
+
 	$packet =~ s/.{104}//; # remove protocol info
 	return unless length $packet > 0;
-			
+
 	$packet =~ s/0d0a0d0a.*/0d0/i; # Just keep the HTTP header
-	
+
 	my $pretty = '';
 	#print $packet; return;
-	
+
 	BYTE: while( $packet =~ m/\G([0-9a-f]{2})\s*/ig )
 		{
 		my $hex = hex $1;
 
 		if( $hex == 0x0D ) { $pretty .= "\n"; next BYTE }
 		if( $hex == 0x0A ) { next BYTE }
-		
+
 		$pretty .= do {
 			if( $hex < 0x20 or $hex > 0x7f ) { '.' }
 			else                             { chr $hex }
 			};
 		}
-		
+
 	if( $pretty =~ m/^(?:HTTP|GET|POST)/ )
 		{
 		print_header( $header );
-		print $pretty;	
+		print $pretty;
 		}
-		
+
 	return length $packet;
 	}
-	
+
 sub print_header
 	{
 	my $header = shift;
