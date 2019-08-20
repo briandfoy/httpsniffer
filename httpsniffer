@@ -53,24 +53,20 @@ Copyright 2002-2019, brian d foy.  All rights reserved.
 This program may be redistributed under the same turns as Perl
 itself.
 
-
 =cut
 
 __PACKAGE__->run unless caller;
 
-sub run
-	{
+sub run {
 	my( $header, $packet ) = ('', '');
 
-	open STDIN, "-|", 'sudo /usr/sbin/tcpdump -lx -i en1 -s 1024 dst port 80 or src port 80';
+	open STDIN, '-|', 'sudo /usr/sbin/tcpdump -lx -i en1 -s 1024 dst port 80 or src port 80';
 	#die "Could not open tcpdump" unless $?;
 
-	LINE: while( <> )
-		{
+	LINE: while( <> ) {
 		chomp;
 
-		if( /^\S+/ )
-			{
+		if( /^\S+/ ) {
 			print_packet( $header, $packet );
 			$header = $_;
 			$packet = undef;
@@ -81,8 +77,7 @@ sub run
 		}
 	}
 
-sub print_packet
-	{
+sub print_packet {
 	my( $header, $packet ) = @_;
 
 	$packet =~ s/0x[0-9a-f]+://mig;
@@ -110,8 +105,7 @@ sub print_packet
 			};
 		}
 
-	if( $pretty =~ m/^(?:HTTP|GET|POST)/ )
-		{
+	if( $pretty =~ m/^(?:HTTP|GET|POST)/ ) {
 		print_header( $header );
 		print $pretty;
 		}
@@ -119,8 +113,7 @@ sub print_packet
 	return length $packet;
 	}
 
-sub print_header
-	{
+sub print_header {
 	my $header = shift;
 	my ( $time, $src, undef, $dst, ) = split /\s+/, $header;
 	$time =~ s/\..*//;
