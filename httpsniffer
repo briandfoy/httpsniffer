@@ -61,13 +61,13 @@ sub run
 	{
 	my( $header, $packet ) = ('', '');
 
-	open STDIN, "sudo /usr/sbin/tcpdump -lx -i en1 -s 1024 dst port 80 or src port 80 |";
+	open STDIN, "-|", 'sudo /usr/sbin/tcpdump -lx -i en1 -s 1024 dst port 80 or src port 80';
 	#die "Could not open tcpdump" unless $?;
-	
-	LINE: while( <> ) 
+
+	LINE: while( <> )
 		{
 		chomp;
-	
+
 		if( /^\S+/ )
 			{
 			print_packet( $header, $packet );
